@@ -8,6 +8,16 @@ export default function Home() {
   const [result, setResult] = useState('')
   const [loading, setLoading] = useState(false)
 
+  interface SWZReportItem {
+  clause: string
+  category: string
+  threat: 'Proste' | 'Trudne' | 'Informacyjne'
+  risk: 'Wysoki' | 'Średni' | 'Niski'
+  why: string
+  advice: string
+  confidence: number
+}
+
   const handleSubmit = async () => {
     if (!swz) return
     setLoading(true)
@@ -86,7 +96,8 @@ export default function Home() {
 
                 return (
                   <div className="space-y-4">
-                    {parsed.map((item: Record<string, any>, idx: number) => (
+                    {parsed.map((item: SWZReportItem, idx: number) => (
+
                       <div
                         key={idx}
                         className="bg-zinc-900 p-4 rounded shadow border border-zinc-700"
