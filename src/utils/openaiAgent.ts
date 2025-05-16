@@ -9,14 +9,12 @@ const ASSISTANT_ID = 'asst_Cr0SNqhxVss0RMvINshWd27h'
 export async function callOpenAIAgent(swz: string, opz: string): Promise<unknown> {
   const thread = await openai.beta.threads.create()
 
-  // ✅ Limit text to avoid hitting the GPT-4o token-per-minute cap
   const maxInputChars = 12000
   const trimmedSWZ = swz.slice(0, maxInputChars)
   const trimmedOPZ = opz?.slice(0, maxInputChars) || ''
 
   const fullPrompt = `
 Jesteś prawnikiem-konsultantem wyspecjalizowanym w zamówieniach publicznych.
-
 Otrzymujesz:
   • plik SWZ (DOCX lub PDF, tekst wprowadza użytkownik),
   • opcjonalnie plik OPZ (opis przedmiotu zamówienia),
@@ -55,8 +53,6 @@ ${trimmedSWZ}
 ${trimmedOPZ ? `OPZ:\n${trimmedOPZ}` : ''}
 `
 
-
-
   await openai.beta.threads.messages.create(thread.id, {
     role: 'user',
     content: fullPrompt,
@@ -66,7 +62,6 @@ ${trimmedOPZ ? `OPZ:\n${trimmedOPZ}` : ''}
     assistant_id: ASSISTANT_ID,
   })
 
-  // ✅ Poll for completion
   while (true) {
     const status = await openai.beta.threads.runs.retrieve(thread.id, run.id)
     if (status.status === 'completed') break
@@ -84,21 +79,27 @@ ${trimmedOPZ ? `OPZ:\n${trimmedOPZ}` : ''}
   const messages = await openai.beta.threads.messages.list(thread.id)
   const latest = messages.data[0]
 
-  const content = latest.content.find((c) => c.type === 'text') as any
-  const text = content?.text?.value?.trim()
+  const content = latest.content.find((c) => c.type === 'text') as OpenAI.Beta.Threads.Messages.TextContentBlock | undefined
+
+const text = content?.text?.value?.trim()
 
   console.log('🔎 Assistant raw reply:', text)
 
-  try {
-    // Remove markdown-style ```json ... ``` if present
-    const clean = text.replace(/```json|```/g, '').trim()
-    const parsed = JSON.parse(clean)
-
-    return parsed
-  } catch (err) {
-    return {
-      error: '❌ Failed to parse JSON response from assistant',
-      raw: text,
-    }
+  if (!text) {
+  return {
+    error: '❌ Assistant response was empty or missing text content.',
   }
+}
+
+const clean = text.replace(/```json|```/g, '').trim()
+
+try {
+  return JSON.parse(clean)
+} catch {
+  return {
+    error: '❌ Failed to parse JSON response from assistant',
+    raw: text,
+  }
+}
+
 }
