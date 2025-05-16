@@ -86,7 +86,7 @@ export default function Home() {
 
                 return (
                   <div className="space-y-4">
-                    {parsed.map((item: any, idx: number) => (
+                    {parsed.map((item: Record<string, any>, idx: number) => (
                       <div
                         key={idx}
                         className="bg-zinc-900 p-4 rounded shadow border border-zinc-700"
@@ -102,7 +102,7 @@ export default function Home() {
                     ))}
                   </div>
                 )
-              } catch (e) {
+              } catch {
                 return (
                   <textarea
                     value={result}

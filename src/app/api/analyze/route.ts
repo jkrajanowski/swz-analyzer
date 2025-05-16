@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync } from 'fs'
 import { parseDocxOrPdf } from '@/utils/parseFiles'
 import { callOpenAIAgent } from '@/utils/openaiAgent'
 import { tmpdir } from 'os'

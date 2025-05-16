@@ -6,7 +6,7 @@ const openai = new OpenAI({
 
 const ASSISTANT_ID = 'asst_Cr0SNqhxVss0RMvINshWd27h'
 
-export async function callOpenAIAgent(swz: string, opz: string): Promise<any> {
+export async function callOpenAIAgent(swz: string, opz: string): Promise<unknown> {
   const thread = await openai.beta.threads.create()
 
   // ✅ Limit text to avoid hitting the GPT-4o token-per-minute cap

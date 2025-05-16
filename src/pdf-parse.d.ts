@@ -2,8 +2,8 @@ declare module 'pdf-parse' {
   import { Buffer } from 'buffer';
 
   interface PdfMetadata {
-    info: any;
-    metadata: any;
+    info: Record<string, unknown> | undefined;
+    metadata: Record<string, unknown> | undefined;
     version: string;
     text: string;
   }
